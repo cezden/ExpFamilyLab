@@ -27,10 +27,12 @@ ExpFam_dist <- function(
 }
 
 #' The generic density function for canonical parametrization
+#' @export
 ExpFam_density_theta <-
   function(x, ...) UseMethod("ExpFam_density_theta")
 
 #' The density function for canonical parametrization
+#' @export
 ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta){
   theta.bounded <- theta
   eta <- org.dist$eta.from.theta(theta.bounded)
@@ -43,10 +45,12 @@ ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta){
 }
 
 #' The generic density function for mean parametrization
+#' @export
 ExpFam_density_eta <- function(x, ...) UseMethod("ExpFam_density_eta")
 
 
 #' The density function for mean parametrization
+#' @export
 ExpFam_density_eta.ExpFam_dist <- function(org.dist, eta){
   eta.bounded <- eta
   A.eta.bounded <- org.dist$A.from.eta(eta.bounded)
