@@ -1,0 +1,10 @@
+Package: ExpFamilyLab
+Type: Package
+Title: Abstraction of the Exponential Families
+Version: 0.1.0
+Author: Cezary Dendek
+Maintainer: Cezary Dendek <cezary.dendek+ExpFamily@gmail.com>
+Description: More about what it does (maybe more than one line)
+License: GPL3+
+LazyData: TRUE
+RoxygenNote: 5.0.1
