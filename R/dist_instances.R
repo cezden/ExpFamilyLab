@@ -20,8 +20,10 @@ ExpFam_dist_Bernoulli <- function(){
 dist_Bernoulli <- function(){
   z <- ExpFam_dist_Bernoulli()
   # ????
-  z$N.logLik.eta <- function(x, eta) dbinom(x, 1, z$theta.from.eta(eta), log = TRUE)
-  z$N.logLik.theta <- function(x, theta) dbinom(x, 1, theta, log = TRUE)
+  z$N.logLik.eta <- function(x, eta) dbinom(x = x, size = 1, prob = z$theta.from.eta(eta), log = TRUE)
+  z$N.logLik.theta <- function(x, theta) dbinom(x = x, size = 1, prob = theta, log = TRUE)
+  z$N.density.eta <- function(x, eta) dbinom(x = x, size = 1, prob = z$theta.from.eta(eta))
+  z$N.density.theta <- function(x, theta) dbinom(x = x, size = 1, prob = theta)
   class(z) <- c(class(z), "N_ExpFam_dist")
   z
 }
@@ -49,11 +51,13 @@ ExpFam_dist_Poisson <- function(){
 #' @export
 dist_Poisson <- function(){
   z <- ExpFam_dist_Poisson()
-  z$N.density.eta <- function(x, eta) dpois(x, z$theta.from.eta(eta))
-  z$N.density.theta <- function(x, theta) dpois(x, theta)
-  z$N.logLik.eta <- function(x, eta) dpois(x, z$theta.from.eta(eta), log = TRUE)
-  z$N.logLik.theta <- function(x, theta) dpois(x, theta, log = TRUE)
+  z$N.density.eta <- function(x, eta) dpois(x, lambda = z$theta.from.eta(eta))
+  z$N.density.theta <- function(x, theta) dpois(x, lambda = theta)
+  z$N.logLik.eta <- function(x, eta) dpois(x, lambda = z$theta.from.eta(eta), log = TRUE)
+  z$N.logLik.theta <- function(x, theta) dpois(x, lambda = theta, log = TRUE)
   class(z) <- c(class(z), "N_ExpFam_dist")
   z
 }
+
+
 

@@ -50,6 +50,7 @@ ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta){
       org.dist$h(x) *
         exp( sum( eta * org.dist$S(x) ) - B.theta.bounded)
     }
+    warning("Buggy code: improper summation for eta.dim > 1")
   }
   dens
 }
@@ -64,9 +65,24 @@ ExpFam_density_eta <- function(x, ...) UseMethod("ExpFam_density_eta")
 ExpFam_density_eta.ExpFam_dist <- function(org.dist, eta){
   eta.bounded <- eta
   A.eta.bounded <- org.dist$A.from.eta(eta.bounded)
-  dens <- function(x){
-    org.dist$h(x)*exp( sum( eta.bounded* org.dist$S(x)) - A.eta.bounded)
+  if (org.dist$eta.dim == 1) {
+    dens <- function(x){
+      org.dist$h(x)*exp( eta.bounded* org.dist$S(x) - A.eta.bounded)
+    }
+  } else {
+    dens <- function(x){
+      org.dist$h(x)*exp( sum( eta.bounded* org.dist$S(x)) - A.eta.bounded)
+    }
+    warning("Buggy code: improper summation for eta.dim > 1")
   }
   dens
 }
 
+#' The generic property of having a GLM-compatible object
+#' @export
+has_stat_GLM <- function(x, ...) UseMethod("has_stat_GLM")
+
+#' @export
+has_stat_GLM.ExpFam_dist <- function(org.dist) {
+  !is.null(org.dist$stats.glm)
+}
