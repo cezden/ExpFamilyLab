@@ -4,7 +4,8 @@
 \alias{ExpFam_dist}
 \title{General components of Exponential Family distribution}
 \usage{
-ExpFam_dist(h, eta.from.theta, theta.from.eta, B.from.theta, A.from.eta, S)
+ExpFam_dist(h, eta.from.theta, theta.from.eta, B.from.theta, A.from.eta, S,
+  eta.dim)
 }
 \arguments{
 \item{h}{(function) the measure}
@@ -18,6 +19,8 @@ ExpFam_dist(h, eta.from.theta, theta.from.eta, B.from.theta, A.from.eta, S)
 \item{A.from.eta}{(function) value of log-normalizer for natural parameter in canonical parametrization}
 
 \item{S}{(function) vector of sufficient statistics}
+
+\item{eta.dim}{(numeric), number of parameters of the exponential family being defined}
 }
 \description{
 General components of Exponential Family distribution

@@ -9,7 +9,8 @@ ExpFam_dist_Bernoulli <- function(){
     theta.from.eta = function(eta) 1/(1 + exp(-eta)),
     B.from.theta = function(theta) -log(1 - theta), #log-normaliser for mean parametrisation
     A.from.eta = function(eta) log(1 + exp(eta)), #log-normaliser for natural parametrisation
-    S = function(x) x # Suff. stats
+    S = function(x) x, # Suff. stats
+    eta.dim = 1
   )
   z$stats.glm <- binomial()
   z
@@ -19,7 +20,9 @@ ExpFam_dist_Bernoulli <- function(){
 dist_Bernoulli <- function(){
   z <- ExpFam_dist_Bernoulli()
   # ????
-  z$logLik <- function(x, prob) dbinom(x, 1, prob, log = TRUE)
+  z$N.logLik.eta <- function(x, eta) dbinom(x, 1, z$theta.from.eta(eta), log = TRUE)
+  z$N.logLik.theta <- function(x, theta) dbinom(x, 1, theta, log = TRUE)
+  class(z) <- c(class(z), "N_ExpFam_dist")
   z
 }
 
@@ -29,15 +32,28 @@ ExpFam_dist_Poisson <- function(){
   ## parameter "by convention": lambda
   ## mean: lambda
   ## theta - lambda
-  ## natural parameter (eta) 
+  ## natural parameter (eta)
   z <- ExpFam_dist(
     h = function(x) (x == round(x))*(x >= 0)/gamma(x + 1), #measure  1/(x!)
     eta.from.theta = function(theta) log(theta),
     theta.from.eta = function(eta) exp(eta),
     B.from.theta = function(theta) theta, #log-normaliser for mean parametrisation
     A.from.eta = function(eta) exp(eta), #log-normaliser for natural parametrisation
-    S = function(x) x # Suff. stats
+    S = function(x) x, # Suff. stats
+    eta.dim = 1
   )
   z$stats.glm <- poisson()
   z
 }
+
+#' @export
+dist_Poisson <- function(){
+  z <- ExpFam_dist_Poisson()
+  z$N.density.eta <- function(x, eta) dpois(x, z$theta.from.eta(eta))
+  z$N.density.theta <- function(x, theta) dpois(x, theta)
+  z$N.logLik.eta <- function(x, eta) dpois(x, z$theta.from.eta(eta), log = TRUE)
+  z$N.logLik.theta <- function(x, theta) dpois(x, theta, log = TRUE)
+  class(z) <- c(class(z), "N_ExpFam_dist")
+  z
+}
+

@@ -6,13 +6,15 @@
 #' @param B.from.theta (function) value of log-normalizer for mean parameter
 #' @param A.from.eta (function) value of log-normalizer for natural parameter in canonical parametrization
 #' @param S (function) vector of sufficient statistics
+#' @param eta.dim (numeric), number of parameters of the exponential family being defined
 ExpFam_dist <- function(
   h,
   eta.from.theta,
   theta.from.eta,
   B.from.theta,
   A.from.eta,
-  S
+  S,
+  eta.dim
 ){
   dst <- list(
     h = h,
@@ -20,7 +22,8 @@ ExpFam_dist <- function(
     theta.from.eta = theta.from.eta,
     B.from.theta = B.from.theta,
     A.from.eta = A.from.eta,
-    S = S
+    S = S,
+    eta.dim = eta.dim
   )
   class(dst) <- "ExpFam_dist"
   dst
@@ -37,9 +40,16 @@ ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta){
   theta.bounded <- theta
   eta <- org.dist$eta.from.theta(theta.bounded)
   B.theta.bounded <- org.dist$B.from.theta(theta)
-  dens <- function(x){
-    org.dist$h(x) *
-      exp( sum( eta * org.dist$S(x) ) - B.theta.bounded)
+  if (org.dist$eta.dim == 1) {
+    dens <- function(x){
+      org.dist$h(x) *
+        exp( eta * org.dist$S(x) - B.theta.bounded)
+    }
+  } else {
+    dens <- function(x){
+      org.dist$h(x) *
+        exp( sum( eta * org.dist$S(x) ) - B.theta.bounded)
+    }
   }
   dens
 }
