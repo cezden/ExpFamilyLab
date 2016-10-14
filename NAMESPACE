@@ -2,9 +2,11 @@
 
 S3method(ExpFam_density_eta,ExpFam_dist)
 S3method(ExpFam_density_theta,ExpFam_dist)
+S3method(has_stat_GLM,ExpFam_dist)
 export(ExpFam_density_eta)
 export(ExpFam_density_theta)
 export(ExpFam_dist_Bernoulli)
 export(ExpFam_dist_Poisson)
 export(dist_Bernoulli)
 export(dist_Poisson)
+export(has_stat_GLM)
