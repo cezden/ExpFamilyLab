@@ -107,7 +107,19 @@ N_autogenerate_functions <- function(x, ...) UseMethod("N_autogenerate_functions
 
 #' @export
 N_autogenerate_functions.ExpFam_dist <- function(z) {
-  z$N.logLik.eta <- function(x, eta) z$N.density.eta(x = x, eta = eta, log = TRUE)
-  z$N.logLik.theta <- function(x, theta) z$N.density.theta(x = x, theta = theta, log = TRUE)
+  if (is.null(z$N.density.eta) && !is.null(z$N.density.theta)) {
+    #autodef N.density.eta
+    z$N.density.eta <- function(x, eta, log = FALSE) z$N.density.theta(x, theta = z$theta.from.eta(eta), log = log)
+  }
+  if (is.null(z$N.density.theta) && !is.null(z$N.density.eta)) {
+    #autodef N.density.eta
+    z$N.density.theta <- function(x, theta, log = FALSE) z$N.density.eta(x, eta = z$eta.from.theta(theta), log = log)
+  }
+  if (is.null(z$N.logLik.eta)) {
+    z$N.logLik.eta <- function(x, eta) z$N.density.eta(x = x, eta = eta, log = TRUE)
+  }
+  if (is.null(z$N.logLik.theta)) {
+    z$N.logLik.theta <- function(x, theta) z$N.density.theta(x = x, theta = theta, log = TRUE)
+  }
   z
 }

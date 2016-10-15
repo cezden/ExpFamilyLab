@@ -12,8 +12,8 @@ ExpFam_dist_Bernoulli <- function(){
     S = function(x) x, # Suff. stats
     eta.dim = 1
   )
-  z$dA.deta <- function(eta) exp(eta) / (1 + exp(eta))
-  z$d2A.deta2 <- function(eta) exp(eta) / (1 + exp(eta)) ^ 2
+  z$dA.deta <- function(eta) exp(eta) / (1 + exp(eta)) # exp. val. of S
+  z$d2A.deta2 <- function(eta) exp(eta) / (1 + exp(eta)) ^ 2 #exp. val. of S^2
   z$theta.from.params <- function(prob) prob
   z$stats.glm <- binomial()
   z
@@ -60,7 +60,7 @@ ExpFam_dist_Poisson <- function(){
 dist_Poisson <- function(){
   z <- ExpFam_dist_Poisson()
   z <- N_autogenerate_from_stat_GLM(z)
-  z$N.density.eta <- function(x, eta, log = FALSE) dpois(x, lambda = z$N.theta.from.eta(eta), log = log)
+  #z$N.density.eta <- function(x, eta, log = FALSE) dpois(x, lambda = z$N.theta.from.eta(eta), log = log)
   z$N.density.theta <- function(x, theta, log = FALSE) dpois(x, lambda = theta, log = log)
   z <- N_autogenerate_functions(z)
   class(z) <- c(class(z), "N_ExpFam_dist")
@@ -94,7 +94,7 @@ ExpFam_dist_Exponential <- function(){
 #' @export
 dist_Exponential <- function(){
   z <- ExpFam_dist_Exponential()
-  z$N.density.eta <- function(x, eta, log = FALSE) dexp(x, rate = z$theta.from.eta(eta), log = log)
+  #z$N.density.eta <- function(x, eta, log = FALSE) dexp(x, rate = z$theta.from.eta(eta), log = log)
   z$N.density.theta <- function(x, theta, log = FALSE) dexp(x, rate = theta, log = log)
   z <- N_autogenerate_functions(z)
   class(z) <- c(class(z), "N_ExpFam_dist")
