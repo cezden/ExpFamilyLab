@@ -6,7 +6,7 @@ test_that("basic tests",{
 
   test_basic_invariance(
     exp.spec.obj,
-    valid.eta = seq(from = -10, to = 5, by = 0.1),
+    valid.eta = seq(from = -10, to = -0.1, by = 0.1),
     valid.theta = seq(from = 0.1, to = 10, by = 0.1),
     valid.values = seq(from = 0, to = 20, by = 0.1)
   )
