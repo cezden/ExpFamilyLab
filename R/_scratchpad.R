@@ -15,6 +15,20 @@ tmptmp <- function(){
   quasi(link = "identity", variance = "constant")
   quasibinomial(link = "logit")
   quasipoisson(link = "log")
+  mgcv::negbin()
+  mgcv::nb()
+
+  mgcv::betar()
+  mgcv::family.mgcv
+  mgcv::fix.family.link(fam)
+  fix.family.var(fam)
+  fix.family.ls(fam)
+  fix.family.qf(fam)
+  fix.family.rd(fam)
+
+  rstanarm::priors
+  rstanarm::stan_glm
+
 
   dbinom(1, 1, 0.5, log = TRUE) + dbinom(1-1, 1, 0.5, log = TRUE)
   dbinom(1, 1, 0.4, log = TRUE) + dbinom(1-1, 1, 0.6, log = TRUE)

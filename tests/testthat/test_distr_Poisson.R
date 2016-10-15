@@ -31,8 +31,6 @@ test_that("basic tests",{
   expect_equal(ExpFam_density_eta(poiss.obj, test.eta)(1), dpois(1, 1.6))   #density for lambda = 1.6
   expect_equal(ExpFam_density_eta(poiss.obj, test.eta)(1:3), dpois(1:3, 1.6))   #density for lambda = 1.6
 
-
-
   expect_equal(ExpFam_density_eta(poiss.obj, 0)(1),  dpois(1, exp(0)))   #density for value 1
 
   # theta.test <- 0.6

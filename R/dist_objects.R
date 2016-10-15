@@ -86,3 +86,28 @@ has_stat_GLM <- function(x, ...) UseMethod("has_stat_GLM")
 has_stat_GLM.ExpFam_dist <- function(org.dist) {
   !is.null(org.dist$stats.glm)
 }
+
+#' @export
+N_autogenerate_from_stat_GLM <- function(x, ...) UseMethod("N_autogenerate_from_stat_GLM")
+
+
+#' @export
+N_autogenerate_from_stat_GLM.ExpFam_dist <- function(z) {
+  if (has_stat_GLM(z)) {
+    z$N.eta.from.theta <- function(theta) z$stats.glm$linkfun(theta)
+    z$N.theta.from.eta <- function(eta) z$stats.glm$linkinv(eta)
+    z$N.variance.from.mean <- function(mu) z$stats.glm$variance(mu)
+  }
+  z
+}
+
+#' @export
+N_autogenerate_functions <- function(x, ...) UseMethod("N_autogenerate_functions")
+
+
+#' @export
+N_autogenerate_functions.ExpFam_dist <- function(z) {
+  z$N.logLik.eta <- function(x, eta) z$N.density.eta(x = x, eta = eta, log = TRUE)
+  z$N.logLik.theta <- function(x, theta) z$N.density.theta(x = x, theta = theta, log = TRUE)
+  z
+}
