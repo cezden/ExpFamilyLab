@@ -7,6 +7,6 @@
 \method{ExpFam_density_theta}{ExpFam_dist}(org.dist, theta)
 }
 \description{
-The density function for canonical parametrization
+\eqn{d(x|\theta) = h(x) \exp{(\eta(\theta)^T S(x) - B(\theta))}}
 }
 

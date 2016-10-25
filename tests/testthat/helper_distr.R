@@ -59,6 +59,7 @@ test_basic_invariance <- function(dist.obj, valid.eta, valid.theta, valid.values
       test.theta.density.N
     )
 
+    # theta --> eta, dens.theta(values) == dens.eta(values)
     test.theta <- sample(valid.theta, 1)
     dist.obj.inst1 <- ExpFam_density_theta(dist.obj, test.theta)
     test.theta.density <- dist.obj.inst1(valid.values)

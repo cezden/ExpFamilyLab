@@ -4,9 +4,10 @@
 \alias{ExpFam_density_eta.ExpFam_dist}
 \title{The density function for mean parametrization}
 \usage{
-\method{ExpFam_density_eta}{ExpFam_dist}(org.dist, eta)
+\method{ExpFam_density_eta}{ExpFam_dist}(org.dist, eta, num.opt = TRUE,
+  verify = TRUE)
 }
 \description{
-The density function for mean parametrization
+\eqn{d(x|\eta) = h(x) \exp{(\eta^T S(x) - A(\eta))}}
 }
 
