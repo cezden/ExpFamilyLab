@@ -181,3 +181,95 @@ tmptmptmp <- function(){
   ExpFam_density(ccc, c(1,2), verify = FALSE)(s.tmp)
   dbeta(tmp$par.mean$theta.from.eta(s.tmp), 1.01, 1.01)
 }
+
+
+#' The generic function for selecting a parametrization
+#' @export
+ExpFam_bind_parametrization <- function(x, ...) UseMethod("ExpFam_bind_parametrization")
+
+#' ExpFam_dist with selected parametrisation
+#' @param dist.obj object of the class \code{\link{ExpFam_dist_ext}}
+#' @param param.name (\code{character}) the name of the parametrisation used as a theta
+#' @export
+ExpFam_bind_parametrization.ExpFam_dist_ext <- function(dist.obj, param.name, num.opt = TRUE){
+  if (is.null(dist.obj[[param.name]])) {
+    stop(paste0("Unknown parametrization '", param.name, "'"))
+  }
+  par.theta <- dist.obj[[param.name]]
+  par.eta <- dist.obj[["canonical"]]
+  z <- ExpFam_dist(
+    h = par.eta$h,
+    eta.from.theta = f_eta_from_theta(par.theta, num.opt = num.opt),
+    theta.from.eta = f_theta_from_eta(par.theta, num.opt = num.opt),
+    B.from.theta = f_B_from_theta(par.theta, num.opt = num.opt),
+    A.from.eta = f_A_from_eta(par.eta, num.opt = num.opt),
+    S = par.eta$S,
+    eta.dim = par.eta$eta.dim
+  )
+  if (has_stat_GLM(par.theta)) {
+    z$stats.glm <- par.theta$stats.glm
+    z <- N_autogenerate_from_stat_GLM(z)
+  }
+  z
+}
+
+#' @export
+ExpFam_reparametrize <- function(x, ...) UseMethod("ExpFam_reparametrize")
+
+#' Exponential Family Reparametrisation
+#' @param param.obj object of class \code{\link{ExpFam_param}}
+#' @param reparam.obj reparametrisation descriptor,
+#'  object of class \code{\link{ExpFam_dist_reparam}}
+#' @param param.type the name for resulting parametrisation
+#' @export
+ExpFam_reparametrize.ExpFam_param <- function(param.obj, reparam.obj, param.type){
+
+  eta.from.theta <- reparametrize_function_with_proto(
+    f1 = param.obj$eta.from.theta,
+    f2 = reparam.obj$y.from.x,
+    res.proto = function(theta) NULL
+  )
+  theta.from.eta <- reparametrize_function_with_proto(
+    f1 = reparam.obj$x.from.y,
+    f2 = param.obj$theta.from.eta,
+    res.proto = function(eta) NULL
+  )
+  B.from.theta <- reparametrize_function_with_proto(
+    f1 = param.obj$B.from.theta,
+    f2 = reparam.obj$y.from.x,
+    res.proto = function(theta) NULL
+  )
+  B.grad <- reparametrize_function_grad_with_proto(
+    f.from.z = param.obj$B.from.theta,
+    f.from.z.grad = param.obj$B.grad,
+    z.from.x = reparam.obj$y.from.x,
+    z.from.x.grad = reparam.obj$y.grad,
+    res.proto = function(theta) NULL
+  )
+
+  B.hess <- reparametrize_function_hess_with_proto(
+    f.from.z = param.obj$B.from.theta,
+    f.from.z.grad = param.obj$B.grad,
+    f.from.z.hess = param.obj$B.hess,
+    z.from.x = reparam.obj$y.from.x,
+    z.from.x.grad = reparam.obj$y.grad,
+    z.from.x.hess = reparam.obj$y.hess,
+    res.proto = function(theta) NULL,
+    simplify = TRUE
+  )
+
+  theta.in.domain <- function(theta)
+    reparam.obj$x.in.domain(theta) &&
+    param.obj$theta.in.domain(reparam.obj$y.from.x(theta))
+
+  ExpFam_param(
+    org.dist = param.obj$org.dist,
+    eta.from.theta = eta.from.theta,
+    theta.from.eta = theta.from.eta,
+    B.from.theta = B.from.theta,
+    B.grad = B.grad,
+    B.hess = B.hess,
+    theta.in.domain = theta.in.domain,
+    param.type = param.type
+  )
+}

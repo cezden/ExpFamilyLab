@@ -9,3 +9,7 @@ License: GPL3+
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Suggests: testthat
+Depends:
+  Deriv,
+  dplyr,
+  pryr

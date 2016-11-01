@@ -6,7 +6,7 @@ test_that("basic tests",{
 
   bern.obj <- dist_Bernoulli()
 
-  test_basic_invariance(
+  test_basic_invariance.ExpFam_dist(
     bern.obj,
     valid.eta = seq(from = -10, to = 10, by = 0.1),
     valid.theta = seq(from = 0.1, to = 0.9, by = 0.1),

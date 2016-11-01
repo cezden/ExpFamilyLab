@@ -4,7 +4,7 @@ test_that("basic tests",{
   exp.spec.obj <- dist_Exponential()
   expect_is(exp.spec.obj, "N_ExpFam_dist")
 
-  test_basic_invariance(
+  test_basic_invariance.ExpFam_dist(
     exp.spec.obj,
     valid.eta = seq(from = -10, to = -0.1, by = 0.1),
     valid.theta = seq(from = 0.1, to = 10, by = 0.1),

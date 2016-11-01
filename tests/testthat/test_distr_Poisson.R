@@ -8,7 +8,7 @@ test_that("basic tests",{
   expect_is(poiss.spec.obj, "ExpFam_dist")
   expect_is(poiss.spec.obj, "N_ExpFam_dist")
 
-  test_basic_invariance(
+  test_basic_invariance.ExpFam_dist(
     poiss.spec.obj,
     valid.eta = seq(from = -10, to = 5, by = 0.1),
     valid.theta = seq(from = 0.1, to = 10, by = 0.1),

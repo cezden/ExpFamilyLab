@@ -8,7 +8,7 @@ test_vec_num_ok <- function(x) {
   all(cond.ok.full)
 }
 
-test_basic_invariance <- function(dist.obj, valid.eta, valid.theta, valid.values) {
+test_basic_invariance.ExpFam_dist <- function(dist.obj, valid.eta, valid.theta, valid.values) {
   expect_is(dist.obj, "ExpFam_dist")
   if (has_stat_GLM(dist.obj)) {
     expect_true(dist.obj$stats.glm$validmu(valid.theta), info = "provided valid.theta is invalid")
@@ -73,3 +73,35 @@ test_basic_invariance <- function(dist.obj, valid.eta, valid.theta, valid.values
 
 
 }
+
+test_basic_invariance.ExpFam_dist_ext <- function(dist.obj, valid.eta, valid.values, param.params) {
+  expect_is(dist.obj, "ExpFam_dist_ext")
+
+  par.can <- dist.obj[["canonical"]]
+  expect_true(par.can$eta.in.domain(valid.eta), info = "provided valid.eta is invalid")
+
+
+  for (pname in names(param.params)) {
+    dist.obj.par.raw <- dist.obj[[pname]]
+    valid.theta.claimed <- param.params[[pname]]$valid.theta
+
+    expect_true(
+      dist.obj.par.raw$theta.in.domain(valid.theta.claimed),
+      info = "provided valid.theta is invalid"
+      )
+
+    for (num.opt in c(TRUE, FALSE)) {
+      dist.obj.par <- ExpFam_bind_parametrization(dist.obj, pname, num.opt = num.opt)
+      test_basic_invariance.ExpFam_dist(
+        dist.obj.par,
+        valid.eta = valid.eta,
+        valid.values = valid.values,
+        valid.theta = valid.theta.claimed
+      )
+    }
+  }
+}
+
+
+
+

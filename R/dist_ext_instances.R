@@ -85,3 +85,63 @@ dist_ext_Bernoulli <- function(){
   z
 }
 
+#' @export
+ExpFam_dist_ext_Exponential <- function(){
+  # 'minus rate'
+  z <- ExpFam_dist_canonical(
+    h = function(x) (x >= 0) * 1.0,
+    A.from.eta = function(eta) -log(-eta), #log-normaliser for natural parametrisation
+    S = function(x) x, # Suff. stats
+    eta.dim = 1,
+    A.grad = function(eta) -1/eta,
+    A.hess = function(eta) 1/eta ^ 2,
+    eta.in.domain = function(eta) all(eta < 0)
+  )
+  z.rate <- ExpFam_param(
+    org.dist = z,
+    eta.from.theta = function(theta) -theta,
+    theta.from.eta = function(eta) -eta,
+    B.from.theta = function(theta) -log(theta),
+    B.grad = function(theta) -1/theta,
+    B.hess = function(theta) 1/theta ^ 2,
+    theta.in.domain = function(theta) all(theta > 0),
+    param.type = "rate"
+  )
+  z.mean <- ExpFam_param(
+    org.dist = z,
+    eta.from.theta = function(theta) -1/theta,
+    theta.from.eta = function(eta) -1/eta,
+    B.from.theta = function(theta) log(theta),
+    B.grad = function(theta) 1/theta,
+    B.hess = function(theta) -1/theta ^ 2,
+    theta.in.domain = function(theta) all(theta > 0),
+    param.type = "mean"
+  )
+  z.rate.inv <- ExpFam_reparametrize(z.rate, Reparam_Inverse(), "mean")
+
+  ExpFam_dist_ext(
+    canonical.param = z,
+    parametrisations = list(z.rate, z.rate.inv)
+  )
+}
+
+#' @export
+dist_ext_Exponential <- function(){
+  z <- ExpFam_dist_ext_Exponential()
+
+  z[["rate"]]$N.density.theta <-
+    function(x, theta, log = FALSE)
+      dexp(x = x, rate = theta, log = log)
+
+  z[["mean"]]$N.density.theta <-
+    function(x, theta, log = FALSE)
+      dexp(x = x, rate = 1/theta, log = log)
+
+
+  z[["canonical"]]$N.density.eta <-
+    function(x, eta, log = FALSE)
+      dexp(x = x, rate = -eta, log = log)
+
+  z
+}
+
