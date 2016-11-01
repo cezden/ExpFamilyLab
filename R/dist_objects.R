@@ -39,7 +39,7 @@ ExpFam_density_theta <-
 #' \eqn{d(x|\theta) = h(x) \exp{(\eta(\theta)^T S(x) - B(\theta))}}
 #'
 #' @export
-ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta){
+ExpFam_density_theta.ExpFam_dist <- function(org.dist, theta, num.opt = FALSE){
   theta.bounded <- theta
   eta <- org.dist$eta.from.theta(theta.bounded)
   B.theta.bounded <- org.dist$B.from.theta(theta)

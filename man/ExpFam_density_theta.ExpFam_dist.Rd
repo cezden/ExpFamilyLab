@@ -4,7 +4,7 @@
 \alias{ExpFam_density_theta.ExpFam_dist}
 \title{The density function for canonical parametrization}
 \usage{
-\method{ExpFam_density_theta}{ExpFam_dist}(org.dist, theta)
+\method{ExpFam_density_theta}{ExpFam_dist}(org.dist, theta, num.opt = FALSE)
 }
 \description{
 \eqn{d(x|\theta) = h(x) \exp{(\eta(\theta)^T S(x) - B(\theta))}}
