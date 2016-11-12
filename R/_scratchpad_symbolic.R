@@ -474,5 +474,60 @@ tmptmp.yacas <- function(){
   expr.y <- Ryacas::Expr(sss)
   expr.tmp <- Ryacas::deriv.Sym(expr.y, name = "theta") %>% Ryacas::as.expression.Sym()
   str(expr.tmp)
+  multisimplify.expression(expr.tmp)
+  multisimplify.expression(sss)
+
+  Deriv::Simplify(Deriv::Deriv(sss))
+
+  Deriv::Deriv(Deriv::Simplify("1/log(1+x)"))
+
+
+  sss <- expression(1/log(1+x))
+
+  expr.y <- Ryacas::Expr(sss)
+  str(expr.y)
+  expr.tmp <- Ryacas::deriv.Expr(expr.y, name = "x") %>% Ryacas::as.expression.Sym()
+  str(expr.tmp)
+  expr.tmp
+
+  sss <- expression(1/(2 + sin(1+x)))
+  expr.y <- Ryacas::Expr(sss)
+  expr.tmp <- Ryacas::deriv.Expr(expr.y, name = "x") %>% Ryacas::as.expression.Sym()
+  str(expr.tmp)
+  expr.tmp
+  Ryacas::Conjugate()
+  print(Ryacas::yacas("Version()"))
+  Ryacas::yacas(expression(deriv(1/(2 + sin(1+x)), "x")))
+
+  e1d <- Ryacas::yacas(expression(deriv(1/log(1+x), "x")), verbose=TRUE)[[1]]
+  str(e1d)
+  Deriv::Deriv(e1d)
+
+  e2d.e <- parse(text=paste("deriv(",e1d,", ",'"x"',")", sep=""))
+  e2d <- Ryacas::yacas(e2d.e) %>% simplify_Ryacas()
+
+
+  sss <- expression(-log(1 - theta))
+  expr.y <- Ryacas::Expr(sss)
+  expr.tmp <- Ryacas::deriv.Expr(expr.y, name = "theta", n=1)
+  expr.tmp
+  str(expr.tmp)
+  Ryacas::as.character.Expr
+
+
+  sss <- expression(1/(2 + sin(1+x)))
+  expr.y <- Ryacas::Expr(sss)
+  expr.tmp <- Ryacas::deriv.Expr(expr.y, name = "x") %>% Ryacas::yacas()
+  str(expr.tmp)
+
+  sss <- expression(-log(1 - theta))
+  expr.y <- Ryacas::Expr(sss)
+  expr.tmp <- Ryacas::deriv.Expr(expr.y, name = "theta") %>% Ryacas::yacas()
+  str(expr.tmp)
+  expr.y2 <- Ryacas::Expr(expr.tmp$text)
+  expr.tmp2 <- Ryacas::deriv.Expr(expr.y2, name = "theta") %>% Ryacas::yacas()
+  str(expr.tmp2)
+
+
 
 }
