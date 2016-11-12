@@ -414,6 +414,8 @@ tmptmp.yacas <- function(){
   Ryacas::Simplify(qqq)
 
 
+
+
   qqq <- expression((-(1/theta^2))^2/(1/theta)^2 - 2/theta^2)
   expr.y <- Ryacas::Expr(qqq)
   expr.tmp <- Ryacas::Simplify.Expr(expr.y) %>% Ryacas::as.expression.Sym()

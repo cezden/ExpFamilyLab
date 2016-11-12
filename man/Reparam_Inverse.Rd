@@ -6,7 +6,10 @@
 \usage{
 Reparam_Inverse()
 }
+\value{
+inverse function as \code{\link{ExpFam_dist_reparam}}
+}
 \description{
-Inverse reparametrisation (1D)
+\eqn{y = 1/x}
 }
 

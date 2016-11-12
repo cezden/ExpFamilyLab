@@ -56,6 +56,10 @@ N_autogenerate_from_stat_GLM.ExpFam_dist_reparam <- function(z){
 }
 
 #' Inverse reparametrisation (1D)
+#'
+#' \eqn{y = 1/x}
+#'
+#' @return inverse function as \code{\link{ExpFam_dist_reparam}}
 #' @export
 Reparam_Inverse <- function(){
   ExpFam_dist_reparam(

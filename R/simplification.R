@@ -204,28 +204,34 @@ multisimplify.expression <- function(expr){
     expr.tmp <- simplify_Ryacas(expr)
     expr.tmp.nchar <- nchar(paste(deparse(expr.tmp), collapse = " "))
     if (expr.nchar * 1.1 >= expr.tmp.nchar) {
-      print("-----------Ryacas")
+      #print("-----------Ryacas")
       expr <- expr.tmp
       expr.nchar <- expr.tmp.nchar
-    } else {
-      print(expr)
-      print(expr.tmp)
-      print("-----------")
     }
-  } else {
-    paste("No Ryacas...")
+    #else {
+      #print(expr)
+      #print(expr.tmp)
+      #print("-----------")
+    #}
   }
+  #else {
+  #  paste("No Ryacas...")
+  #}
   expr.tmp <- if (is.function(expr)) {
     Deriv::Simplify(expr, env = environment(expr))
   } else {
     Deriv::Simplify(expr)
   }
+
   expr.tmp.nchar <- nchar(paste(deparse(expr.tmp), collapse = " "))
-  if (expr.nchar * 1.1 >= expr.tmp.nchar) {
+
+  ret.expr <- if (expr.nchar * 1.1 >= expr.tmp.nchar) {
     expr.tmp
   } else {
     expr
   }
+
+  ret.expr
 }
 
 #' Ryacas expression simplifyier
