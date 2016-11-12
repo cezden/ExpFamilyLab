@@ -91,7 +91,7 @@ test_basic_invariance.ExpFam_dist_ext <- function(dist.obj, valid.eta, valid.val
       )
 
     for (num.opt in c(TRUE, FALSE)) {
-      dist.obj.par <- ExpFam_bind_parametrization(dist.obj, pname, num.opt = num.opt)
+      dist.obj.par <- bind_parametrization(dist.obj, pname, num.opt = num.opt)
       test_basic_invariance.ExpFam_dist(
         dist.obj.par,
         valid.eta = valid.eta,

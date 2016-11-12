@@ -7,6 +7,18 @@
 \method{ExpFam_density}{ExpFam_dist_canonical}(org.dist, eta, num.opt = TRUE,
   verify = TRUE)
 }
+\arguments{
+\item{org.dist}{the object of class \code{\link{ExpFam_dist_canonical}}}
+
+\item{eta}{(\code{numeric}) selected value of canonical parameter}
+
+\item{num.opt}{(\code{logical}) should numerically-optimized functions be used in the defined function}
+
+\item{verify}{(\code{logical}) should the provided \code{eta} be verified?}
+}
+\value{
+density function
+}
 \description{
 \eqn{d(x|\eta) = h(x) \exp{(\eta^T S(x) - A(\eta))}}
 }

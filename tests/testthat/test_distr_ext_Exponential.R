@@ -13,7 +13,7 @@ test_that("basic tests",{
     )
   )
 
-  distr.par.mean <- ExpFam_bind_parametrization(distr.obj, "mean")
+  distr.par.mean <- bind_parametrization(distr.obj, "mean")
 
   test.mean <- 0.7
   dens1 <- ExpFam_density_theta(distr.par.mean, theta = test.mean, num.opt = TRUE)

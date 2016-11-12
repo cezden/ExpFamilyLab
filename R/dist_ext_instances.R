@@ -7,6 +7,8 @@
 ## natural exponential family (NEF): f(x|eta) = exp(eta'x - A(eta))*h(x)
 
 ###
+# log1p(x) computes log(1+x) accurately also for |x| << 1.
+# expm1(x) computes exp(x) - 1 accurately also for |x| << 1.
 
 
 #' @export
@@ -17,25 +19,39 @@ ExpFam_dist_ext_Bernoulli <- function(){
     A.from.eta = function(eta) log(1 + exp(eta)), #log-normaliser for natural parametrisation
     S = function(x) x, # Suff. stats
     eta.dim = 1,
-    A.grad = function(eta) exp(eta)/(1 + exp(eta)),
+    A.grad = function(eta) 1/(1 + exp(-eta)),
     A.hess = function(eta) (exp(eta)/(1 + exp(eta)))/(1 + exp(eta)),
-    eta.in.domain = function(eta) TRUE
+    eta.in.domain = function(eta) TRUE,
+    family.name = "Bernoulli"
   )
   ## parameter "by convention": probability of success (p)
   ## theta: mean parametrisation == p
-  z.mean <- ExpFam_param(
-    org.dist = z,
-    eta.from.theta = function(theta) log(theta) - log(1 - theta),
-    theta.from.eta = function(eta) 1/(1 + exp(-eta)),
-    B.from.theta = function(theta) -log(1 - theta), #log-normaliser for mean parametrisation
-    B.grad = function(theta) -1 / (1 + theta),
-    B.hess = function(theta) 1 / (1 + theta) ^ 2,
-    theta.in.domain = function(theta) all(theta > 0 & theta < 1),
+
+  z.mean <- ExpFam_reparametrize(
+    z,
+    Reparam_Logit(),
+    hints = list(
+      B.from.theta = function(theta) -log(1 - theta), #log-normaliser for mean parametrisation
+      B.grad = function(theta) 1 / (1 - theta),
+      B.hess = function(theta) 1 / (-1 + theta) ^ 2
+      #
+      #B.grad = function(theta) -1 / (1 + theta),
+      #B.hess = function(theta) 1 / (1 + theta) ^ 2
+    ),
     param.type = "mean"
   )
 
-  z.mean$eta.from.theta.grad <- function(theta) 1/(theta*(1 - theta))
-  z.mean$theta.from.eta.grad <- function(eta) (exp(eta)/(1 + exp(eta)))/(1 + exp(eta))
+  # z.mean <- ExpFam_param(
+  #   org.dist = z,
+  #   eta.from.theta = function(theta) log(theta) - log(1 - theta),
+  #   theta.from.eta = function(eta) 1/(1 + exp(-eta)),
+  #   B.from.theta = function(theta) -log(1 - theta), #log-normaliser for mean parametrisation
+  #   B.grad = function(theta) -1 / (1 + theta),
+  #   B.hess = function(theta) 1 / (1 + theta) ^ 2,
+  #   theta.in.domain = function(theta) all(theta > 0 & theta < 1),
+  #   param.type = "mean"
+  # )
+
   z.mean$stats.glm <- binomial()
 
   z$conjugate.prior.elems_raw <- list(
@@ -66,6 +82,9 @@ ExpFam_dist_ext_Bernoulli <- function(){
   )
 }
 
+#' Bernoulli distribution
+#'
+#' @return object of class \code{\link{ExpFam_dist_ext}}
 #' @export
 dist_ext_Bernoulli <- function(){
   z <- ExpFam_dist_ext_Bernoulli()
@@ -95,7 +114,8 @@ ExpFam_dist_ext_Exponential <- function(){
     eta.dim = 1,
     A.grad = function(eta) -1/eta,
     A.hess = function(eta) 1/eta ^ 2,
-    eta.in.domain = function(eta) all(eta < 0)
+    eta.in.domain = function(eta) all(eta < 0),
+    family.name = "Exponential"
   )
   z.rate <- ExpFam_param(
     org.dist = z,
@@ -107,16 +127,16 @@ ExpFam_dist_ext_Exponential <- function(){
     theta.in.domain = function(theta) all(theta > 0),
     param.type = "rate"
   )
-  z.mean <- ExpFam_param(
-    org.dist = z,
-    eta.from.theta = function(theta) -1/theta,
-    theta.from.eta = function(eta) -1/eta,
-    B.from.theta = function(theta) log(theta),
-    B.grad = function(theta) 1/theta,
-    B.hess = function(theta) -1/theta ^ 2,
-    theta.in.domain = function(theta) all(theta > 0),
-    param.type = "mean"
-  )
+  # z.mean <- ExpFam_param(
+  #   org.dist = z,
+  #   eta.from.theta = function(theta) -1/theta,
+  #   theta.from.eta = function(eta) -1/eta,
+  #   B.from.theta = function(theta) log(theta),
+  #   B.grad = function(theta) 1/theta,
+  #   B.hess = function(theta) -1/theta ^ 2,
+  #   theta.in.domain = function(theta) all(theta > 0),
+  #   param.type = "mean"
+  # )
   z.rate.inv <- ExpFam_reparametrize(z.rate, Reparam_Inverse(), "mean")
 
   ExpFam_dist_ext(
@@ -125,6 +145,9 @@ ExpFam_dist_ext_Exponential <- function(){
   )
 }
 
+#' Exponential distribution
+#'
+#' @return object of class \code{\link{ExpFam_dist_ext}}
 #' @export
 dist_ext_Exponential <- function(){
   z <- ExpFam_dist_ext_Exponential()

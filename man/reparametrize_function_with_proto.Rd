@@ -4,18 +4,18 @@
 \alias{reparametrize_function_with_proto}
 \title{Function reparametrization}
 \usage{
-reparametrize_function_with_proto(f1, f2, res.proto)
+reparametrize_function_with_proto(f1, g, res.proto)
 }
 \arguments{
 \item{f1}{function 1}
 
-\item{f2}{function 2}
+\item{g}{function 2}
 
 \item{res.proto}{resulting function prototype with NULL body, e.g. \code{function(theta) NULL}}
 }
 \description{
 Creates a function being a reparametrisation (with simplification) of
- \code{f1 * f2}
+ \code{f1 * g}, e.g. f1(g(x))
 }
 \examples{
 

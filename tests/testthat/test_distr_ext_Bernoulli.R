@@ -12,7 +12,7 @@ test_that("basic tests",{
 
   expect_equal(dens1(c(0,1)), dens2(c(0,1)))
 
-  bern.par.mean <- ExpFam_bind_parametrization(bern.obj, "mean")
+  bern.par.mean <- bind_parametrization(bern.obj, "mean")
   test_basic_invariance.ExpFam_dist(
     bern.par.mean,
     valid.eta = seq(from = -10, to = 10, by = 0.1),

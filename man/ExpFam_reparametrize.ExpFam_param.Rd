@@ -2,7 +2,7 @@
 % Please edit documentation in R/dist_param_objects.R
 \name{ExpFam_reparametrize.ExpFam_param}
 \alias{ExpFam_reparametrize.ExpFam_param}
-\title{Exponential Family Reparametrisation}
+\title{Reparametrization of the ExpFam distribution}
 \usage{
 \method{ExpFam_reparametrize}{ExpFam_param}(param.obj, reparam.obj, param.type)
 }
@@ -14,7 +14,10 @@ object of class \code{\link{ExpFam_dist_reparam}}}
 
 \item{param.type}{the name for resulting parametrisation}
 }
+\value{
+object of class \code{\link{ExpFam_param}}
+}
 \description{
-Exponential Family Reparametrisation
+Reparametrization of the ExpFam distribution
 }
 

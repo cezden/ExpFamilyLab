@@ -8,7 +8,7 @@ Description: More about what it does (maybe more than one line)
 License: GPL3+
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Suggests: testthat
+Suggests: testthat, Ryacas
 Depends:
   Deriv,
   dplyr,

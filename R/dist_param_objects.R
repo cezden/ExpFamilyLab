@@ -1,12 +1,17 @@
-#' Components of Exponential Family distribution
+#' Exponential Family distribution in canonical form
 #'
-#' @param h (function) the measure
-#' @param A.from.eta (function) value of log-normalizer for natural parameter in canonical parametrization
-#' @param S (function) vector of sufficient statistics
-#' @param eta.dim (numeric), number of parameters of the exponential family being defined
-#' @param A.grad (function) gradient of the function A.from.eta
-#' @param A.hess (function) hessian of the function A.from.eta
-#' @param eta.in.domain
+#' The class defines the distribution in the canonical representation,
+#' with the density function defined as:
+#' \eqn{d(x|\eta) = h(x) exp{(\eta^T S(x) - A(\eta))}}
+#'
+#' @param h (\code{function}) the measure
+#' @param A.from.eta (\code{function}) value of log-normalizer for natural parameter in canonical parametrization
+#' @param S (\code{function}) vector of sufficient statistics
+#' @param eta.dim (\code{numeric}), number of parameters of the exponential family being defined
+#' @param A.grad (\code{function}) gradient of the function \code{A.from.eta}
+#' @param A.hess (\code{function}) hessian of the function \code{A.from.eta}
+#' @param eta.in.domain (\code{function}) characteristic function of \eqn{\eta}
+#' @param family.name (\code{character}) the family name (e.g. Bernoulli)
 #' @export
 ExpFam_dist_canonical <- function(
   h,
@@ -15,7 +20,8 @@ ExpFam_dist_canonical <- function(
   eta.dim,
   A.grad,
   A.hess,
-  eta.in.domain
+  eta.in.domain,
+  family.name
 ){
   dst <- list(
     h = h,
@@ -24,12 +30,30 @@ ExpFam_dist_canonical <- function(
     eta.dim = eta.dim,
     A.grad = A.grad,
     A.hess = A.hess,
-    eta.in.domain = eta.in.domain
+    eta.in.domain = eta.in.domain,
+    family.name = family.name
   )
   class(dst) <- "ExpFam_dist_canonical"
   dst
 }
 
+#' Parametrization of the canonical ExpFam distribution
+#'
+#' The class provides a description of the mapping \eqn{\eta = f(\theta)},
+#' where \eqn{\eta} is a canonical parameter.
+#'
+#' @param org.dist (object of class \code{\link{ExpFam_dist_canonical}}) the distribution being parametrized
+#' @param eta.from.theta (\code{function}) mapping to canonical parameters \eqn{\eta(\theta)}
+#' @param theta.from.eta (\code{function}) mapping from the canonical parameters \eqn{\theta(\eta)}
+#' @param B.from.theta (\code{function}) the reparametrized log-normalizer of the distribution,
+#'   simplified and numerically sound \eqn{B(\theta) = A(\eta(\theta))}
+#' @param B.grad (\code{function}) the gradient of the reparametrized log-normalizer of the distribution,
+#'   simplified and numerically sound \eqn{B'(\theta) = A'(\eta(\theta)) \eta'(\theta)}
+#' @param B.hess (\code{function}) the Hessian of the reparametrized log-normalizer of the distribution,
+#'   simplified and numerically sound
+#'   \eqn{B''(\theta) = A''(\eta(\theta)) (\eta'(\theta))^2 + A'(\eta(\theta)) \eta''(\theta) }
+#' @param theta.in.domain (\code{function}) characteristic function
+#' @param param.type (\code{character}) the parametrisation "identifier" (e.g. "Bernoulli, mean")
 #' @export
 ExpFam_param <- function(
   org.dist,
@@ -55,6 +79,12 @@ ExpFam_param <- function(
   dst
 }
 
+#' ExpFam distribution
+#'
+#' The class is a container for the canonical form and various parametrisations
+#'
+#' @param canonical.param canonical parametrisation, object of class \code{\link{ExpFam_dist_canonical}}
+#' @param parametrisations list of parametrisations, objects of class \code{\link{ExpFam_param}}
 #' @export
 ExpFam_dist_ext <- function(
   canonical.param,
@@ -80,6 +110,11 @@ ExpFam_density <- function(x, ...) UseMethod("ExpFam_density")
 #'
 #' \eqn{d(x|\eta) = h(x) \exp{(\eta^T S(x) - A(\eta))}}
 #'
+#' @param org.dist the object of class \code{\link{ExpFam_dist_canonical}}
+#' @param eta (\code{numeric}) selected value of canonical parameter
+#' @param num.opt (\code{logical}) should numerically-optimized functions be used in the defined function
+#' @param verify (\code{logical}) should the provided \code{eta} be verified?
+#' @return density function
 #' @export
 ExpFam_density.ExpFam_dist_canonical <- function(org.dist, eta, num.opt = TRUE, verify = TRUE){
   if (verify && !functor_eval_1(org.dist$eta.in.domain, default.val = TRUE, eta = eta)) {
@@ -93,7 +128,7 @@ ExpFam_density.ExpFam_dist_canonical <- function(org.dist, eta, num.opt = TRUE, 
       eta.bound <- eta
       A.eta.bound <- f_A_from_eta(org.dist)(eta.bound)
       dens <- function(x){
-        org.dist$h(x)*exp( eta.bound* org.dist$S(x) - A.eta.bound)
+        org.dist$h(x)*exp( eta.bound * org.dist$S(x) - A.eta.bound)
       }
     } else {
       # ncol(eta) == org.dist$eta.dim
@@ -107,6 +142,10 @@ ExpFam_density.ExpFam_dist_canonical <- function(org.dist, eta, num.opt = TRUE, 
   dens
 }
 
+#' The density function for given parametrization
+#'
+#' \eqn{d(x|\eta) = h(x) \exp{(\eta^T S(x) - A(\eta))}}
+#'
 #' @export
 ExpFam_density.ExpFam_param <- function(par.dist, theta, num.opt = TRUE, verify = TRUE) {
   if (verify && !functor_eval_1(par.dist$theta.in.domain, default.val = TRUE, theta = theta)) {
@@ -185,13 +224,16 @@ tmptmptmp <- function(){
 
 #' The generic function for selecting a parametrization
 #' @export
-ExpFam_bind_parametrization <- function(x, ...) UseMethod("ExpFam_bind_parametrization")
+bind_parametrization <- function(x, ...) UseMethod("bind_parametrization")
 
 #' ExpFam_dist with selected parametrisation
+#'
 #' @param dist.obj object of the class \code{\link{ExpFam_dist_ext}}
 #' @param param.name (\code{character}) the name of the parametrisation used as a theta
+#' @param num.opt (\code{logical}) should numerically-optimized functions be used in the defined function
+#' @return object of class \code{\link{ExpFam_dist}}
 #' @export
-ExpFam_bind_parametrization.ExpFam_dist_ext <- function(dist.obj, param.name, num.opt = TRUE){
+bind_parametrization.ExpFam_dist_ext <- function(dist.obj, param.name, num.opt = TRUE){
   if (is.null(dist.obj[[param.name]])) {
     stop(paste0("Unknown parametrization '", param.name, "'"))
   }
@@ -213,30 +255,33 @@ ExpFam_bind_parametrization.ExpFam_dist_ext <- function(dist.obj, param.name, nu
   z
 }
 
+
 #' @export
 ExpFam_reparametrize <- function(x, ...) UseMethod("ExpFam_reparametrize")
 
-#' Exponential Family Reparametrisation
+#' Reparametrization of the ExpFam distribution
+#'
 #' @param param.obj object of class \code{\link{ExpFam_param}}
 #' @param reparam.obj reparametrisation descriptor,
 #'  object of class \code{\link{ExpFam_dist_reparam}}
 #' @param param.type the name for resulting parametrisation
+#' @return object of class \code{\link{ExpFam_param}}
 #' @export
 ExpFam_reparametrize.ExpFam_param <- function(param.obj, reparam.obj, param.type){
 
   eta.from.theta <- reparametrize_function_with_proto(
     f1 = param.obj$eta.from.theta,
-    f2 = reparam.obj$y.from.x,
+    g = reparam.obj$y.from.x,
     res.proto = function(theta) NULL
   )
   theta.from.eta <- reparametrize_function_with_proto(
     f1 = reparam.obj$x.from.y,
-    f2 = param.obj$theta.from.eta,
+    g = param.obj$theta.from.eta,
     res.proto = function(eta) NULL
   )
   B.from.theta <- reparametrize_function_with_proto(
     f1 = param.obj$B.from.theta,
-    f2 = reparam.obj$y.from.x,
+    g = reparam.obj$y.from.x,
     res.proto = function(theta) NULL
   )
   B.grad <- reparametrize_function_grad_with_proto(
@@ -272,4 +317,94 @@ ExpFam_reparametrize.ExpFam_param <- function(param.obj, reparam.obj, param.type
     theta.in.domain = theta.in.domain,
     param.type = param.type
   )
+}
+
+
+#' Reparametrization of the ExpFam distribution in canonical form
+#'
+#' @examples
+#'   ExpFam_reparametrize.ExpFam_dist_canonical(
+#'    param.obj = ,
+#'    reparam.obj = Reparam_Logit(),
+#'    hints = list(
+#'        B.from.theta = function(theta) -log(1 - theta), #log-normaliser for mean parametrisation
+#'        B.grad = function(theta) -1 / (1 + theta),
+#'        B.hess = function(theta) 1 / (1 + theta) ^ 2
+#'       ),
+#'    param.type = "mean"
+#'   )
+#'
+#' @export
+ExpFam_reparametrize.ExpFam_dist_canonical <- function(param.obj, reparam.obj, hints = list(), param.type){
+
+  eta.from.theta <- rename_farg_with_proto(
+    f = reparam.obj$y.from.x,
+    res.proto = function(theta) NULL
+  )
+
+  theta.from.eta <- rename_farg_with_proto(
+    f = reparam.obj$x.from.y,
+    res.proto = function(eta) NULL
+  )
+
+  B.from.theta <- functor_get_first_not_null_guarded_eval(
+    f.vec = c(hints$B.from.theta),
+    default.func.eval = function(){
+      reparametrize_function_with_proto(
+        f1 = param.obj$A.from.eta,
+        g = reparam.obj$y.from.x,
+        res.proto = function(theta) NULL
+      )
+    }
+  )
+
+  B.grad <- functor_get_first_not_null_guarded_eval(
+    f.vec = c(hints$B.grad),
+    default.func.eval = function(){
+      reparametrize_function_grad_with_proto(
+        f.from.z = param.obj$A.from.eta,
+        f.from.z.grad = param.obj$A.grad,
+        z.from.x = reparam.obj$y.from.x,
+        z.from.x.grad = reparam.obj$y.grad,
+        res.proto = function(theta) NULL
+      )
+    }
+  )
+
+  B.hess <- functor_get_first_not_null_guarded_eval(
+    f.vec = c(hints$B.hess),
+    default.func.eval = function(){
+      reparametrize_function_hess_with_proto(
+        f.from.z = param.obj$A.from.eta,
+        f.from.z.grad = param.obj$A.grad,
+        f.from.z.hess = param.obj$A.hess,
+        z.from.x = reparam.obj$y.from.x,
+        z.from.x.grad = reparam.obj$y.grad,
+        z.from.x.hess = reparam.obj$y.hess,
+        res.proto = function(theta) NULL,
+        simplify = TRUE
+      )
+    }
+  )
+
+
+
+  theta.in.domain <- function(theta)
+    reparam.obj$x.in.domain(theta) &&
+    param.obj$eta.in.domain(reparam.obj$y.from.x(theta))
+
+
+
+  ExpFam_param(
+    org.dist = param.obj,
+    eta.from.theta = eta.from.theta,
+    theta.from.eta = theta.from.eta,
+    B.from.theta = B.from.theta,
+    B.grad = B.grad,
+    B.hess = B.hess,
+    theta.in.domain = theta.in.domain,
+    param.type = param.type
+  )
+
+
 }

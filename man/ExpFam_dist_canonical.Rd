@@ -2,24 +2,31 @@
 % Please edit documentation in R/dist_param_objects.R
 \name{ExpFam_dist_canonical}
 \alias{ExpFam_dist_canonical}
-\title{Components of Exponential Family distribution}
+\title{Exponential Family distribution in canonical form}
 \usage{
-ExpFam_dist_canonical(h, A.from.eta, S, eta.dim, A.grad, A.hess, eta.in.domain)
+ExpFam_dist_canonical(h, A.from.eta, S, eta.dim, A.grad, A.hess, eta.in.domain,
+  family.name)
 }
 \arguments{
-\item{h}{(function) the measure}
+\item{h}{(\code{function}) the measure}
 
-\item{A.from.eta}{(function) value of log-normalizer for natural parameter in canonical parametrization}
+\item{A.from.eta}{(\code{function}) value of log-normalizer for natural parameter in canonical parametrization}
 
-\item{S}{(function) vector of sufficient statistics}
+\item{S}{(\code{function}) vector of sufficient statistics}
 
-\item{eta.dim}{(numeric), number of parameters of the exponential family being defined}
+\item{eta.dim}{(\code{numeric}), number of parameters of the exponential family being defined}
 
-\item{A.grad}{(function) gradient of the function A.from.eta}
+\item{A.grad}{(\code{function}) gradient of the function \code{A.from.eta}}
 
-\item{A.hess}{(function) hessian of the function A.from.eta}
+\item{A.hess}{(\code{function}) hessian of the function \code{A.from.eta}}
+
+\item{eta.in.domain}{(\code{function}) characteristic function of \eqn{\eta}}
+
+\item{family.name}{(\code{character}) the family name (e.g. Bernoulli)}
 }
 \description{
-Components of Exponential Family distribution
+The class defines the distribution in the canonical representation,
+with the density function defined as:
+\eqn{d(x|\eta) = h(x) exp{(\eta^T S(x) - A(\eta))}}
 }
 
